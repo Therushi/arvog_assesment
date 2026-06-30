@@ -1,0 +1,17 @@
+node_modules/
+dist/
+.angular/
+coverage/
+
+# env
+.env
+*.local
+
+# logs
+*.log
+npm-debug.log*
+
+# os
+.DS_Store
+
+*.md
