@@ -1,5 +1,5 @@
 import pg from "pg";
-import { env } from "dotenv";
+import { env } from "./env.js";
 
 const { Pool } = pg;
 
@@ -19,7 +19,8 @@ export async function connectPostgres() {
     await client.query("SELECT 1");
     console.log(`[db] Postgres connected`);
   } catch (error) {
-    console.log(`Something went wrong while connecting DB`);
+    console.error(`[db] Postgres connection failed`, error);
+    throw error;
   } finally {
     client.release();
   }

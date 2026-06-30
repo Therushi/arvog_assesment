@@ -1,5 +1,5 @@
 import { createClient } from "redis";
-import { env } from "dotenv";
+import { env } from "./env.js";
 
 export const redisClient = createClient({
   socket: { host: env.redis.host, port: env.redis.port },
