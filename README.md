@@ -140,6 +140,5 @@ frontend/
     services/       # one HttpClient-owning service per feature
     guards/          # authGuard
     interceptors/    # authInterceptor
-plans/              # phase-by-phase implementation plans (this repo's build log)
 docker-compose.yml
 ```
