@@ -4,6 +4,7 @@ import { categoryRoutes } from "./category.routes.js";
 import { productRoutes } from "./product.routes.js";
 import { uploadRoutes } from "./upload.routes.js";
 import { reportRoutes } from "./report.routes.js";
+import { dashboardRoutes } from "./dashboard.routes.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 
 export const apiRouter = Router();
@@ -21,3 +22,4 @@ apiRouter.use("/categories", authMiddleware, categoryRoutes);
 apiRouter.use("/products", authMiddleware, productRoutes);
 apiRouter.use("/upload", authMiddleware, uploadRoutes);
 apiRouter.use("/reports", authMiddleware, reportRoutes);
+apiRouter.use("/dashboard", authMiddleware, dashboardRoutes);

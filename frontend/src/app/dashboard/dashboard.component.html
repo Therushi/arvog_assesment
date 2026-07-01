@@ -1,0 +1,22 @@
+<div class="max-w-3xl mx-auto p-6">
+  <h2 class="text-xl font-semibold mb-6">Dashboard</h2>
+
+  @if (loading()) {
+    <div class="flex justify-center py-12">
+      <mat-spinner diameter="32" />
+    </div>
+  } @else if (stats()) {
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <mat-card class="p-4">
+        <p class="text-sm text-gray-500">Total Products</p>
+        <p class="text-3xl font-semibold">{{ stats()?.totalProducts }}</p>
+      </mat-card>
+      <mat-card class="p-4">
+        <p class="text-sm text-gray-500">Total Categories</p>
+        <p class="text-3xl font-semibold">{{ stats()?.totalCategories }}</p>
+      </mat-card>
+    </div>
+  } @else {
+    <p class="text-gray-500 text-center py-8">No stats available.</p>
+  }
+</div>

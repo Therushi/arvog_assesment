@@ -1,4 +1,11 @@
+// backend/src/routes/report.routes.js
 import { Router } from "express";
+import { reportController } from "../controllers/report.controller.js";
+import { validate } from "../middlewares/validation.middleware.js";
+import { generateReportSchema, reportIdParamSchema } from "../validators/report.validator.js";
 
-// Endpoints implemented in Phase 6 (POST /reports/products, GET /reports/:id).
 export const reportRoutes = Router();
+
+reportRoutes.post("/products", validate(generateReportSchema, "body"), reportController.generate);
+reportRoutes.get("/:id", validate(reportIdParamSchema, "params"), reportController.getStatus);
+reportRoutes.get("/:id/download", validate(reportIdParamSchema, "params"), reportController.download);
