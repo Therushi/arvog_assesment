@@ -1,0 +1,43 @@
+@use '@angular/material' as mat;
+@include mat.core();
+
+// Google-inspired blue palette (close to #1a73e8) built on Material's blue hue.
+$app-primary: mat.define-palette(mat.$blue-palette, 700, 400, 900);
+$app-accent: mat.define-palette(mat.$green-palette, 600, 300, 800);
+$app-warn: mat.define-palette(mat.$red-palette, 600);
+
+$app-theme: mat.define-light-theme(
+  (
+    color: (
+      primary: $app-primary,
+      accent: $app-accent,
+      warn: $app-warn,
+    ),
+    typography: mat.define-typography-config(),
+    density: 0,
+  )
+);
+
+@include mat.all-component-themes($app-theme);
+
+@import 'ngx-toastr/toastr';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  background-color: #f8f9fa;
+}
+
+.mat-toolbar.mat-primary {
+  background: #ffffff;
+  color: #202124;
+}

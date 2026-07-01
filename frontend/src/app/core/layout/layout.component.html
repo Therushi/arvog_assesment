@@ -1,0 +1,69 @@
+<div class="min-h-screen bg-surface-alt">
+  <mat-toolbar
+    class="!bg-white !text-on-surface !shadow-sm border-b border-gray-200 !px-4 sm:!px-6"
+  >
+    <div class="flex items-center gap-2">
+      <mat-icon class="text-google-blue">inventory_2</mat-icon>
+      <span class="text-lg font-medium text-on-surface">Test App</span>
+    </div>
+
+    <nav class="hidden sm:flex items-center gap-1 ml-8">
+      <a
+        mat-button
+        routerLink="/home"
+        routerLinkActive="!text-google-blue"
+        [routerLinkActiveOptions]="{ exact: false }"
+        class="!rounded-full !text-on-surface font-medium"
+      >
+        Home
+      </a>
+      <a
+        mat-button
+        routerLink="/categories"
+        routerLinkActive="!text-google-blue"
+        class="!rounded-full !text-on-surface font-medium"
+      >
+        Categories
+      </a>
+    </nav>
+
+    <span class="flex-1"></span>
+
+    <button
+      mat-icon-button
+      [matMenuTriggerFor]="userMenu"
+      aria-label="Account menu"
+    >
+      <mat-icon class="!text-on-surface-muted">account_circle</mat-icon>
+    </button>
+    <mat-menu #userMenu="matMenu">
+      <button mat-menu-item (click)="logout()">
+        <mat-icon>logout</mat-icon>
+        <span>Logout</span>
+      </button>
+    </mat-menu>
+  </mat-toolbar>
+
+  <nav
+    class="flex sm:hidden items-center gap-1 px-2 py-1 bg-white border-b border-gray-200"
+  >
+    <a
+      mat-button
+      routerLink="/home"
+      routerLinkActive="text-google-blue font-medium"
+    >
+      Home
+    </a>
+    <a
+      mat-button
+      routerLink="/categories"
+      routerLinkActive="text-google-blue font-medium"
+    >
+      Categories
+    </a>
+  </nav>
+
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 py-6">
+    <router-outlet />
+  </main>
+</div>

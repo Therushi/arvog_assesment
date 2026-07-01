@@ -12,6 +12,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatIconModule } from '@angular/material/icon';
 import { ToastrService } from 'ngx-toastr';
 import { finalize } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
@@ -28,6 +29,7 @@ import { AuthService } from '../services/auth.service';
     MatInputModule,
     MatButtonModule,
     MatProgressSpinnerModule,
+    MatIconModule,
   ],
   templateUrl: 'login.component.html',
 })
@@ -59,7 +61,7 @@ export class LoginComponent {
       .login(email, password)
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
-        next: () => this.router.navigate(['/dashboard']),
+        next: () => this.router.navigate(['/home']),
         error: (err) => {
           const message = err?.error?.error ?? 'Login failed';
           this.toaster.error(message, 'Error');

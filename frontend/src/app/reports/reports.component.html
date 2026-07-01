@@ -1,42 +1,99 @@
-<div class="max-w-xl mx-auto p-6">
-  <h2 class="text-xl font-semibold mb-4">Product Reports</h2>
-
-  <div class="mb-4">
-    <label class="mr-4">
-      <input type="radio" name="format" value="csv" [checked]="format() === 'csv'" (change)="setFormat('csv')" />
-      CSV
-    </label>
-    <label>
-      <input type="radio" name="format" value="xlsx" [checked]="format() === 'xlsx'" (change)="setFormat('xlsx')" />
-      XLSX
-    </label>
+<div class="p-6 space-y-6">
+  <div>
+    <h2 class="text-lg font-medium text-on-surface">Product Reports</h2>
+    <p class="text-sm text-on-surface-muted mt-1">
+      Generate and download a product report.
+    </p>
   </div>
 
-  <input
-    type="text"
-    placeholder="Filter by product/category name (optional)"
-    [value]="search()"
-    (input)="onSearchChange($any($event.target).value)"
-    class="border rounded px-3 py-2 mb-4 w-full"
-  />
-
-  <button
-    (click)="generate()"
-    [disabled]="generating()"
-    class="px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-50"
+  <mat-card
+    class="!rounded-2xl !shadow-sm !border !border-gray-200 p-6 space-y-5"
   >
-    {{ generating() ? 'Generating…' : 'Generate Report' }}
-  </button>
+    <div>
+      <p
+        class="text-xs font-semibold uppercase tracking-wider text-on-surface-muted mb-2"
+      >
+        Format
+      </p>
+      <mat-radio-group
+        class="flex gap-6"
+        [value]="format()"
+        (change)="setFormat($event.value)"
+      >
+        <mat-radio-button value="csv">CSV</mat-radio-button>
+        <mat-radio-button value="xlsx">XLSX</mat-radio-button>
+      </mat-radio-group>
+    </div>
+
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Filter by product/category name (optional)</mat-label>
+      <input
+        matInput
+        [value]="search()"
+        (input)="onSearchChange($any($event.target).value)"
+      />
+    </mat-form-field>
+
+    <button
+      mat-flat-button
+      color="primary"
+      class="w-full sm:w-auto"
+      (click)="generate()"
+      [disabled]="generating()"
+    >
+      <mat-icon>summarize</mat-icon>
+      {{ generating() ? "Generating…" : "Generate Report" }}
+    </button>
+
+    @if (generating()) {
+      <mat-progress-bar mode="indeterminate" class="w-full" />
+    }
+  </mat-card>
 
   @if (status(); as s) {
-    <div class="mt-6 border rounded p-4">
-      <p>Status: <strong>{{ s.state }}</strong></p>
+    <mat-card class="!rounded-2xl !shadow-sm !border !border-gray-200 p-5">
+      <div class="flex items-center gap-2 mb-3">
+        <mat-icon
+          class="!text-lg !w-5 !h-5"
+          [class.text-google-green]="s.state === 'completed'"
+          [class.text-google-red]="s.state === 'failed'"
+          [class.text-google-blue]="
+            s.state !== 'completed' && s.state !== 'failed'
+          "
+        >
+          @if (s.state === "completed") {
+            check_circle
+          } @else if (s.state === "failed") {
+            error
+          } @else {
+            hourglass_top
+          }
+        </mat-icon>
+        <p class="text-sm">
+          Status: <strong class="capitalize">{{ s.state }}</strong>
+        </p>
+      </div>
+
       @if (s.result) {
-        <p>Rows: {{ s.result.rowCount }}</p>
-        <button (click)="download()" class="mt-2 px-4 py-2 bg-green-600 text-white rounded">
-          Download {{ s.result.format.toUpperCase() }}
-        </button>
+        <div
+          class="flex items-center justify-between rounded-xl bg-surface-alt p-4"
+        >
+          <div>
+            <p class="text-2xl font-semibold text-on-surface">
+              {{ s.result.rowCount }}
+            </p>
+            <p class="text-xs text-on-surface-muted">Rows in report</p>
+          </div>
+          <button mat-stroked-button color="primary" (click)="download()">
+            <mat-icon>download</mat-icon>
+            Download {{ s.result.format.toUpperCase() }}
+          </button>
+        </div>
+      } @else if (s.state === "failed") {
+        <p class="text-sm text-google-red">
+          {{ s.failedReason ?? "Report generation failed" }}
+        </p>
       }
-    </div>
+    </mat-card>
   }
 </div>

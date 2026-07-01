@@ -1,43 +1,137 @@
-<div class="max-w-xl mx-auto p-6">
-  <h2 class="text-xl font-semibold mb-4">Bulk Upload Products</h2>
+<div class="p-6 space-y-6">
+  <div>
+    <h2 class="text-lg font-medium text-on-surface">Bulk Upload Products</h2>
+    <p class="text-sm text-on-surface-muted mt-1">
+      Upload a CSV file to create products in bulk.
+    </p>
+  </div>
 
-  <input
-    type="file"
-    accept=".csv"
-    (change)="onFileSelected($event)"
-    class="mb-4"
-  />
-
-  <button
-    (click)="upload()"
-    [disabled]="!selectedFile() || uploading()"
-    class="px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-50"
+  <mat-card
+    class="!rounded-2xl !shadow-sm !border !border-2 !border-dashed !border-gray-300 p-8 flex flex-col items-center text-center gap-3"
   >
-    {{ uploading() ? "Processing…" : "Upload" }}
-  </button>
+    <div
+      class="flex items-center justify-center w-16 h-16 rounded-full bg-blue-50"
+    >
+      <mat-icon class="text-google-blue !w-8 !h-8 !text-3xl"
+        >upload_file</mat-icon
+      >
+    </div>
+
+    <div>
+      <p class="text-sm font-medium text-on-surface">
+        Drop your CSV here or browse
+      </p>
+      <p class="text-xs text-on-surface-muted mt-1">
+        Only .csv files are supported
+      </p>
+    </div>
+
+    <input
+      #fileInput
+      type="file"
+      accept=".csv"
+      (change)="onFileSelected($event)"
+      class="hidden"
+    />
+
+    <button
+      mat-stroked-button
+      type="button"
+      (click)="triggerFileInput(fileInput)"
+    >
+      Choose CSV file
+    </button>
+
+    @if (selectedFile()) {
+      <p
+        class="flex items-center gap-2 text-sm text-on-surface bg-surface-alt rounded-full px-3 py-1"
+      >
+        <mat-icon class="!text-base !w-4 !h-4 text-on-surface-muted"
+          >description</mat-icon
+        >
+        {{ selectedFile()?.name }}
+      </p>
+    }
+
+    <button
+      mat-flat-button
+      color="primary"
+      (click)="upload()"
+      [disabled]="!selectedFile() || uploading()"
+    >
+      {{ uploading() ? "Processing…" : "Upload" }}
+    </button>
+
+    @if (uploading()) {
+      <mat-progress-bar mode="indeterminate" class="w-full" />
+    }
+  </mat-card>
 
   @if (status(); as s) {
-    <div class="mt-6 border rounded p-4">
-      <p>
-        Status: <strong>{{ s.state }}</strong>
-      </p>
+    <mat-card class="!rounded-2xl !shadow-sm !border !border-gray-200 p-5">
+      <div class="flex items-center gap-2 mb-2">
+        <mat-icon
+          class="!text-lg !w-5 !h-5"
+          [class.text-google-green]="s.state === 'completed'"
+          [class.text-google-red]="s.state === 'failed'"
+          [class.text-google-blue]="
+            s.state !== 'completed' && s.state !== 'failed'
+          "
+        >
+          @if (s.state === "completed") {
+            check_circle
+          } @else if (s.state === "failed") {
+            error
+          } @else {
+            hourglass_top
+          }
+        </mat-icon>
+        <p class="text-sm">
+          Status: <strong class="capitalize">{{ s.state }}</strong>
+        </p>
+      </div>
+
       @if (s.result) {
-        <p>Total rows: {{ s.result.total }}</p>
-        <p>Inserted: {{ s.result.inserted }}</p>
-        <p>Skipped: {{ s.result.skipped }}</p>
+        <div class="grid grid-cols-3 gap-3 mt-3">
+          <div class="rounded-xl bg-surface-alt p-3 text-center">
+            <p class="text-xl font-semibold text-on-surface">
+              {{ s.result.total }}
+            </p>
+            <p class="text-xs text-on-surface-muted">Total rows</p>
+          </div>
+          <div class="rounded-xl bg-green-50 p-3 text-center">
+            <p class="text-xl font-semibold text-google-green">
+              {{ s.result.inserted }}
+            </p>
+            <p class="text-xs text-on-surface-muted">Inserted</p>
+          </div>
+          <div class="rounded-xl bg-yellow-50 p-3 text-center">
+            <p class="text-xl font-semibold text-google-yellow">
+              {{ s.result.skipped }}
+            </p>
+            <p class="text-xs text-on-surface-muted">Skipped</p>
+          </div>
+        </div>
+
         @if (s.result.errors.length) {
-          <details class="mt-2">
-            <summary>{{ s.result.errors.length }} errors</summary>
-            <ul class="text-sm text-red-600">
+          <mat-expansion-panel
+            class="!shadow-none !border !border-gray-200 mt-4"
+          >
+            <mat-expansion-panel-header>
+              {{ s.result.errors.length }} errors
+            </mat-expansion-panel-header>
+            <ul class="text-sm text-google-red space-y-1">
               @for (e of s.result.errors; track e.row) {
                 <li>Row {{ e.row }}: {{ e.reason }}</li>
               }
             </ul>
-          </details>
+          </mat-expansion-panel>
         }
-      } @else if (s.state === 'failed') {
-        <p class="text-sm text-red-600">{{ s.failedReason ?? 'Upload failed' }}</p>
+      } @else if (s.state === "failed") {
+        <p class="text-sm text-google-red">
+          {{ s.failedReason ?? "Upload failed" }}
+        </p>
       }
-    </div>
+    </mat-card>
   }
 </div>

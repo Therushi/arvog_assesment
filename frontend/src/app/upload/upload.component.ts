@@ -6,6 +6,11 @@ import {
   signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { ToastrService } from 'ngx-toastr';
 import {
   UploadService,
@@ -15,7 +20,14 @@ import {
 @Component({
   selector: 'app-upload',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+    MatCardModule,
+    MatButtonModule,
+    MatIconModule,
+    MatProgressBarModule,
+    MatExpansionModule,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: 'upload.component.html',
 })
@@ -27,6 +39,10 @@ export class UploadComponent {
   selectedFile = signal<File | null>(null);
   uploading = signal(false);
   status = signal<UploadStatusResponse | null>(null);
+
+  triggerFileInput(input: HTMLInputElement): void {
+    input.click();
+  }
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;

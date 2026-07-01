@@ -1,57 +1,80 @@
-<div class="p-6 max-w-6xl mx-auto">
-  <h2 class="text-xl font-semibold mb-4">Products</h2>
+<div class="p-6 mx-auto space-y-6">
+  <div>
+    <h2 class="text-xl font-semibold text-on-surface">Products</h2>
+    <p class="text-sm text-on-surface-muted mt-1">
+      Manage your product catalog.
+    </p>
+  </div>
 
-  <form
-    [formGroup]="form"
-    (ngSubmit)="onSubmit()"
-    class="flex flex-wrap items-start gap-3 mb-6"
-  >
-    <mat-form-field appearance="outline">
-      <mat-label>Name</mat-label>
-      <input matInput formControlName="name" placeholder="e.g. iPhone 15" />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>Price</mat-label>
-      <input matInput type="number" step="0.01" formControlName="price" />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>Category</mat-label>
-      <mat-select formControlName="categoryId">
-        @for (category of categories(); track category.id) {
-          <mat-option [value]="category.id">{{ category.name }}</mat-option>
-        }
-      </mat-select>
-    </mat-form-field>
-
-    <button
-      mat-raised-button
-      color="primary"
-      type="submit"
-      [disabled]="saving()"
+  <mat-card class="!rounded-2xl !shadow-sm !border !border-gray-200 p-5">
+    <h3
+      class="text-xs font-semibold uppercase tracking-wider text-on-surface-muted mb-4"
     >
-      @if (saving()) {
-        <mat-spinner diameter="18" />
-      } @else {
-        {{ editingId() ? "Update" : "Add" }}
-      }
-    </button>
+      {{ editingId() ? "Edit product" : "Add product" }}
+    </h3>
 
-    @if (editingId()) {
-      <button mat-stroked-button type="button" (click)="cancelEdit()">
-        Cancel
+    <form
+      [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      class="flex flex-wrap items-center gap-3"
+    >
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Name</mat-label>
+        <input matInput formControlName="name" placeholder="e.g. iPhone 15" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Price</mat-label>
+        <input matInput type="number" step="0.01" formControlName="price" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Category</mat-label>
+        <mat-select formControlName="categoryId">
+          @for (category of categories(); track category.id) {
+            <mat-option [value]="category.id">{{ category.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <button
+        mat-raised-button
+        color="primary"
+        type="submit"
+        [disabled]="saving()"
+      >
+        @if (saving()) {
+          <mat-spinner diameter="18" />
+        } @else {
+          {{ editingId() ? "Update" : "Add" }}
+        }
       </button>
-    }
-  </form>
 
-  <div class="flex items-center gap-3 mb-4">
-    <mat-form-field appearance="outline" class="w-72">
+      @if (editingId()) {
+        <button
+          mat-stroked-button
+          type="button"
+          class=""
+          (click)="cancelEdit()"
+        >
+          Cancel
+        </button>
+      }
+    </form>
+  </mat-card>
+
+  <div class="flex flex-wrap items-center gap-3">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="w-72">
       <mat-label>Search by name or category</mat-label>
       <input matInput [formControl]="searchControl" placeholder="e.g. iphone" />
     </mat-form-field>
 
-    <button mat-stroked-button type="button" (click)="toggleSort()">
+    <button
+      mat-stroked-button
+      type="button"
+      (click)="toggleSort()"
+    >
+      <mat-icon>swap_vert</mat-icon>
       Sort by price ({{
         sort() === "asc"
           ? "Low → High"
@@ -62,62 +85,106 @@
     </button>
   </div>
 
-  @if (loading()) {
-    <div class="flex justify-center py-8"><mat-spinner diameter="32" /></div>
-  } @else {
-    <table mat-table [dataSource]="products()" class="w-full">
-      <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef>Name</th>
-        <td mat-cell *matCellDef="let product">{{ product.name }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="categoryName">
-        <th mat-header-cell *matHeaderCellDef>Category</th>
-        <td mat-cell *matCellDef="let product">{{ product.categoryName }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="price">
-        <th mat-header-cell *matHeaderCellDef>Price</th>
-        <td mat-cell *matCellDef="let product">
-          {{ product.price | currency: "INR" : "symbol" : "1.2-2" }}
-        </td>
-      </ng-container>
-
-      <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef class="text-right">Actions</th>
-        <td mat-cell *matCellDef="let product" class="text-right">
-          <button
-            mat-icon-button
-            (click)="startEdit(product)"
-            aria-label="Edit"
+  <mat-card
+    class="!rounded-2xl !shadow-sm !border !border-gray-200 !p-0 overflow-hidden"
+  >
+    @if (loading()) {
+      <div class="flex justify-center py-12"><mat-spinner diameter="32" /></div>
+    } @else {
+      <table mat-table [dataSource]="products()" class="w-full">
+        <ng-container matColumnDef="name">
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            class="!bg-surface-alt !text-xs !font-semibold !uppercase !tracking-wide !text-on-surface-muted"
           >
-            <mat-icon>edit</mat-icon>
-          </button>
-          <button
-            mat-icon-button
-            color="warn"
-            (click)="onDelete(product)"
-            aria-label="Delete"
+            Name
+          </th>
+          <td mat-cell *matCellDef="let product" class="!text-on-surface">
+            {{ product.name }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="categoryName">
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            class="!bg-surface-alt !text-xs !font-semibold !uppercase !tracking-wide !text-on-surface-muted"
           >
-            <mat-icon>delete</mat-icon>
-          </button>
-        </td>
-      </ng-container>
+            Category
+          </th>
+          <td mat-cell *matCellDef="let product">{{ product.categoryName }}</td>
+        </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="columns"></tr>
-      <tr mat-row *matRowDef="let row; columns: columns"></tr>
-    </table>
+        <ng-container matColumnDef="price">
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            class="!bg-surface-alt !text-xs !font-semibold !uppercase !tracking-wide !text-on-surface-muted"
+          >
+            Price
+          </th>
+          <td mat-cell *matCellDef="let product" class="font-medium">
+            {{ product.price | currency: "INR" : "symbol" : "1.2-2" }}
+          </td>
+        </ng-container>
 
-    @if (!products().length) {
-      <p class="text-gray-500 text-center py-8">No products yet.</p>
+        <ng-container matColumnDef="actions">
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            class="!bg-surface-alt !text-xs !font-semibold !uppercase !tracking-wide !text-on-surface-muted text-right"
+          >
+            Actions
+          </th>
+          <td mat-cell *matCellDef="let product" class="text-right">
+            <button
+              mat-icon-button
+              (click)="startEdit(product)"
+              aria-label="Edit"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              color="warn"
+              (click)="onDelete(product)"
+              aria-label="Delete"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columns"></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; columns: columns"
+          class="hover:!bg-surface-alt transition-colors"
+        ></tr>
+      </table>
+
+      @if (!products().length) {
+        <div class="flex flex-col items-center gap-2 py-16 text-center">
+          <mat-icon
+            class="!text-4xl !w-10 !h-10 text-on-surface-muted opacity-40"
+            >inventory_2</mat-icon
+          >
+          <p class="text-on-surface-muted">No products yet.</p>
+          <p class="text-xs text-on-surface-muted">
+            Add your first product using the form above.
+          </p>
+        </div>
+      }
+
+      <mat-paginator
+        class="!border-t !border-gray-200"
+        [length]="total()"
+        [pageSize]="limit()"
+        [pageSizeOptions]="[10, 20, 50]"
+        [pageIndex]="page() - 1"
+        (page)="onPage($event)"
+      />
     }
-
-    <mat-paginator
-      [length]="total()"
-      [pageSize]="limit()"
-      [pageSizeOptions]="[10, 20, 50]"
-      [pageIndex]="page() - 1"
-      (page)="onPage($event)"
-    />
-  }
+  </mat-card>
 </div>
