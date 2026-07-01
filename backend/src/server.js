@@ -2,16 +2,14 @@ import { app } from "./app.js";
 import { env } from "./config/env.js";
 import { logger } from "./utils/logger.js";
 import { connectMysql } from "./config/db.js";
+import { initDb } from "./config/initDb.js";
 import { redisConnection } from "./config/redis.js";
-// Importing the workers starts them listening on their queues.
+
 import { uploadWorker } from "./workers/upload.worker.js";
 import { reportWorker } from "./workers/report.worker.js";
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-// Dependencies (MySQL, Redis) may still be starting when this container boots.
-// Retry rather than crashing so a transient "not ready yet" doesn't take the
-// app down permanently.
 async function withRetry(label, fn, { attempts = 15, delayMs = 3000 } = {}) {
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
     try {
@@ -28,6 +26,7 @@ async function withRetry(label, fn, { attempts = 15, delayMs = 3000 } = {}) {
 
 async function bootstrap() {
   await withRetry("MySQL", connectMysql);
+  await initDb();
   await withRetry("Redis", () => redisConnection.ping());
   logger.info(
     { queues: [uploadWorker.name, reportWorker.name] },
@@ -56,8 +55,6 @@ async function bootstrap() {
 }
 
 bootstrap().catch((err) => {
-  // Use console.error (synchronous) so the reason is always visible — pino's
-  // transport worker may not flush before process.exit.
   console.error("[bootstrap] failed to start:", err);
   process.exit(1);
 });

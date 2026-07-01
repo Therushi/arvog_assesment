@@ -1,4 +1,13 @@
-import { CanActivateFn } from '@angular/router';
+import { inject } from '@angular/core';
+import { CanActivateFn, Router } from '@angular/router';
+import { AuthService } from '../services/auth.service';
 
-// Route protection wired to JWT presence in Phase 2. Allows all for now.
-export const authGuard: CanActivateFn = () => true;
+export const authGuard: CanActivateFn = () => {
+  const auth = inject(AuthService);
+  const router = inject(Router);
+
+  if (auth.isLoggedIn()) {
+    return true;
+  }
+  return router.createUrlTree(['/login']);
+};

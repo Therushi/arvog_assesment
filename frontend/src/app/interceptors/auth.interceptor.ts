@@ -1,4 +1,17 @@
+import { inject } from '@angular/core';
 import { HttpInterceptorFn } from '@angular/common/http';
+import { AuthService } from '../services/auth.service';
 
-// Attaches the JWT Bearer token to outgoing requests — wired in Phase 2.
-export const authInterceptor: HttpInterceptorFn = (req, next) => next(req);
+export const authInterceptor: HttpInterceptorFn = (req, next) => {
+  const token = inject(AuthService).getToken();
+
+  if (!token) {
+    return next(req);
+  }
+
+  return next(
+    req.clone({
+      setHeaders: { Authorization: `Bearer ${token}` },
+    }),
+  );
+};
