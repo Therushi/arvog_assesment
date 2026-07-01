@@ -30,25 +30,6 @@ import { AuthService } from '../services/auth.service';
     MatProgressSpinnerModule,
   ],
   templateUrl: 'login.component.html',
-  styles: [
-    `
-      .login-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-        background: #f5f5f5;
-      }
-      .login-card {
-        width: 400px;
-        padding: 16px;
-      }
-      .full-width {
-        width: 100%;
-        margin-bottom: 16px;
-      }
-    `,
-  ],
 })
 export class LoginComponent {
   private readonly fb = inject(FormBuilder);
