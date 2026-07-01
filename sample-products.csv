@@ -1,0 +1,13 @@
+name,image,price,category
+Bluetooth Speaker,,2999,Electronics
+Gaming Headset,https://example.com/headset.jpg,4499,Electronics
+Denim Jacket,,3299,Clothing
+Ceramic Mug Set,,899,Home & Kitchen
+Sapiens,,1499,Books
+Resistance Bands,,799,Sports & Outdoors
+,,999,Electronics
+No Price Item,,,Electronics
+Negative Price Item,,-50,Electronics
+Text Price Item,,abc,Electronics
+Unknown Category Item,,1999,Toys
+Smart Watch,,7999,electronics

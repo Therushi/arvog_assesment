@@ -1,0 +1,43 @@
+<div class="max-w-xl mx-auto p-6">
+  <h2 class="text-xl font-semibold mb-4">Bulk Upload Products</h2>
+
+  <input
+    type="file"
+    accept=".csv"
+    (change)="onFileSelected($event)"
+    class="mb-4"
+  />
+
+  <button
+    (click)="upload()"
+    [disabled]="!selectedFile() || uploading()"
+    class="px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-50"
+  >
+    {{ uploading() ? "Processing…" : "Upload" }}
+  </button>
+
+  @if (status(); as s) {
+    <div class="mt-6 border rounded p-4">
+      <p>
+        Status: <strong>{{ s.state }}</strong>
+      </p>
+      @if (s.result) {
+        <p>Total rows: {{ s.result.total }}</p>
+        <p>Inserted: {{ s.result.inserted }}</p>
+        <p>Skipped: {{ s.result.skipped }}</p>
+        @if (s.result.errors.length) {
+          <details class="mt-2">
+            <summary>{{ s.result.errors.length }} errors</summary>
+            <ul class="text-sm text-red-600">
+              @for (e of s.result.errors; track e.row) {
+                <li>Row {{ e.row }}: {{ e.reason }}</li>
+              }
+            </ul>
+          </details>
+        }
+      } @else if (s.state === 'failed') {
+        <p class="text-sm text-red-600">{{ s.failedReason ?? 'Upload failed' }}</p>
+      }
+    </div>
+  }
+</div>
