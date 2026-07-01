@@ -1,20 +1,25 @@
 services:
   db:
-    image: postgres:16-alpine
+    image: mysql:8
     restart: unless-stopped
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
-      - "${POSTGRES_PORT}:5432"
+      - "${MYSQL_PORT}:3306"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - mysqldata:/var/lib/mysql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${MYSQL_ROOT_PASSWORD}"]
       interval: 5s
       timeout: 5s
       retries: 10
+      # MySQL 8 initializes its data dir on first run and restarts mid-init;
+      # don't let health checks pass (or count as failures) until it settles.
+      start_period: 40s
 
   redis:
     image: redis:7-alpine
@@ -37,11 +42,12 @@ services:
       BACKEND_PORT: 3000
       API_PREFIX: ${API_PREFIX}
       JWT_SECRET: ${JWT_SECRET}
-      POSTGRES_HOST: db
-      POSTGRES_PORT: 5432
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
+      MYSQL_HOST: db
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       REDIS_HOST: redis
       REDIS_PORT: 6379
     ports:
@@ -67,5 +73,5 @@ services:
       - backend
 
 volumes:
-  pgdata:
+  mysqldata:
   redisdata:

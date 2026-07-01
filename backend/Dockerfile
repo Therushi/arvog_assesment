@@ -7,6 +7,9 @@ RUN npm install
 
 COPY . .
 
+# Never run as root.
+USER node
+
 EXPOSE 3000
 
 # nodemon for hot-reload across the Docker bind mount
