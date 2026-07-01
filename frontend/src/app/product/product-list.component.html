@@ -1,0 +1,123 @@
+<div class="p-6 max-w-6xl mx-auto">
+  <h2 class="text-xl font-semibold mb-4">Products</h2>
+
+  <form
+    [formGroup]="form"
+    (ngSubmit)="onSubmit()"
+    class="flex flex-wrap items-start gap-3 mb-6"
+  >
+    <mat-form-field appearance="outline">
+      <mat-label>Name</mat-label>
+      <input matInput formControlName="name" placeholder="e.g. iPhone 15" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Price</mat-label>
+      <input matInput type="number" step="0.01" formControlName="price" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Category</mat-label>
+      <mat-select formControlName="categoryId">
+        @for (category of categories(); track category.id) {
+          <mat-option [value]="category.id">{{ category.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <button
+      mat-raised-button
+      color="primary"
+      type="submit"
+      [disabled]="saving()"
+    >
+      @if (saving()) {
+        <mat-spinner diameter="18" />
+      } @else {
+        {{ editingId() ? "Update" : "Add" }}
+      }
+    </button>
+
+    @if (editingId()) {
+      <button mat-stroked-button type="button" (click)="cancelEdit()">
+        Cancel
+      </button>
+    }
+  </form>
+
+  <div class="flex items-center gap-3 mb-4">
+    <mat-form-field appearance="outline" class="w-72">
+      <mat-label>Search by name or category</mat-label>
+      <input matInput [formControl]="searchControl" placeholder="e.g. iphone" />
+    </mat-form-field>
+
+    <button mat-stroked-button type="button" (click)="toggleSort()">
+      Sort by price ({{
+        sort() === "asc"
+          ? "Low → High"
+          : sort() === "desc"
+            ? "High → Low"
+            : "None"
+      }})
+    </button>
+  </div>
+
+  @if (loading()) {
+    <div class="flex justify-center py-8"><mat-spinner diameter="32" /></div>
+  } @else {
+    <table mat-table [dataSource]="products()" class="w-full">
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Name</th>
+        <td mat-cell *matCellDef="let product">{{ product.name }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="categoryName">
+        <th mat-header-cell *matHeaderCellDef>Category</th>
+        <td mat-cell *matCellDef="let product">{{ product.categoryName }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="price">
+        <th mat-header-cell *matHeaderCellDef>Price</th>
+        <td mat-cell *matCellDef="let product">
+          {{ product.price | currency: "INR" : "symbol" : "1.2-2" }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef class="text-right">Actions</th>
+        <td mat-cell *matCellDef="let product" class="text-right">
+          <button
+            mat-icon-button
+            (click)="startEdit(product)"
+            aria-label="Edit"
+          >
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            color="warn"
+            (click)="onDelete(product)"
+            aria-label="Delete"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columns"></tr>
+      <tr mat-row *matRowDef="let row; columns: columns"></tr>
+    </table>
+
+    @if (!products().length) {
+      <p class="text-gray-500 text-center py-8">No products yet.</p>
+    }
+
+    <mat-paginator
+      [length]="total()"
+      [pageSize]="limit()"
+      [pageSizeOptions]="[10, 20, 50]"
+      [pageIndex]="page() - 1"
+      (page)="onPage($event)"
+    />
+  }
+</div>
